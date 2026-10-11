@@ -1,0 +1,12 @@
+group,value,rows,flagged_rate,meaning
+type,Bearing Failure,789,0.030418250950570342,recall (detected)
+type,Brake Failure,1280,0.02578125,recall (detected)
+type,None,20009,0.9999500224898795,correctly cleared
+type,Signal Failure,868,0.10138248847926268,recall (detected)
+type,Track Defect,992,0.22076612903225806,recall (detected)
+type,Wheel Defect,1137,0.11521547933157432,recall (detected)
+severity,Critical,411,0.09245742092457421,recall (detected)
+severity,High,858,0.0944055944055944,recall (detected)
+severity,Low,2285,0.0936542669584245,recall (detected)
+severity,Medium,1512,0.10714285714285714,recall (detected)
+severity,None,20009,0.9999500224898795,correctly cleared
