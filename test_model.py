@@ -121,7 +121,7 @@ pd.DataFrame({"true": y_te, "probability": p_te, "prediction": pred_te,
               "failure_type": df_te[meta["failure_type_col"]].fillna("None") if meta.get("failure_type_col") else ""}
              ).to_csv(f"{OUT_DIR}/test_predictions.csv", index=False)
 
-# ---------------- evaluation.png ----------------
+#  evaluation.png 
 fig, ax = plt.subplots(2, 3, figsize=(19, 11))
 fig.suptitle(f"Railway Predictive Maintenance | Train Acc {m_tr['Accuracy']*100:.2f}% | "
              f"Test Acc {m_te['Accuracy']*100:.2f}% | Baseline {baseline*100:.2f}% | "
@@ -179,7 +179,7 @@ else:
 plt.tight_layout()
 plt.savefig(f"{OUT_DIR}/evaluation.png", dpi=150)
 
-# ---------------- metrics_comparison.png ----------------
+#  metrics_comparison.png 
 fig2 = plt.figure(figsize=(14, 10))
 gs = GridSpec(2, 2, figure=fig2, height_ratios=[1.2, 1])
 axb = fig2.add_subplot(gs[0, :])
@@ -204,7 +204,7 @@ for col, (nm, yy, pp) in enumerate([("Train", y_tr, pred_tr), ("Test", y_te, pre
 plt.tight_layout()
 plt.savefig(f"{OUT_DIR}/metrics_comparison.png", dpi=150)
 
-# ---------------- permutation importance ----------------
+#  permutation importance 
 idx = np.random.RandomState(1).choice(len(X_te), size=min(5000, len(X_te)), replace=False)
 Xs, ys = X_te.iloc[idx].reset_index(drop=True), y_te[idx]
 base_auc = roc_auc_score(ys, predict_proba(Xs))

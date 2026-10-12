@@ -1,9 +1,3 @@
-"""
-Quantify how much of 'Maintenance Required' is explainable by sensor rules,
-and whether the failure TYPE can be predicted at all.
-
-Run after the split step.   Install: pip install pandas scikit-learn
-"""
 import re
 import numpy as np
 import pandas as pd

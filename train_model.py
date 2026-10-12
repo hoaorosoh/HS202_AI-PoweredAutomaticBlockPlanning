@@ -14,7 +14,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OrdinalEncoder
 from sklearn.tree import DecisionTreeClassifier, export_text
 
-# ------------------------------ settings ------------------------------
+# settings 
 TRAIN_PATH = "data/train.csv"
 MODEL_DIR = "models"
 RANDOM_STATE = 42
@@ -23,7 +23,7 @@ TUNE = True              # False = skip the hyper-parameter search (faster)
 N_ITER = 12              # random-search candidates
 TUNE_ROWS = 40000        # rows used for the search
 THRESHOLD_MODE = "accuracy"   # "accuracy" | "f1" | "precision95" | "default"
-# ----------------------------------------------------------------------
+# 
 
 norm = lambda s: re.sub(r"[^a-z0-9]", "", s.lower())
 
@@ -83,7 +83,7 @@ def make_pipeline(params):
     return Pipeline([("prep", prep), ("clf", clf)])
 
 
-# ---------------- 1. hyper-parameter search (binary target) ----------------
+#  1. hyper-parameter search (binary target) 
 DEFAULT_PARAMS = dict(learning_rate=0.05, max_depth=6, max_leaf_nodes=31,
                       min_samples_leaf=100, l2_regularization=1.0)
 best_params = DEFAULT_PARAMS
@@ -103,7 +103,7 @@ if TUNE:
     best_params = {k.replace("clf__", ""): v for k, v in search.best_params_.items()}
     print(f"Best params: {best_params} (CV PR-AUC {search.best_score_:.4f})")
 
-# ---------------- 2. out-of-fold predictions for each candidate ----------------
+#  2. out-of-fold predictions for each candidate 
 print(f"\n{N_FOLDS}-fold cross-validation on the training data...")
 skf = StratifiedKFold(N_FOLDS, shuffle=True, random_state=RANDOM_STATE)
 strat = y_type if use_multi else y
@@ -137,7 +137,7 @@ oof = candidates[best_name]
 print(f"-> selected candidate: {best_name}")
 
 
-# ---------------- 3. decision thresholds from out-of-fold predictions ----------------
+#  3. decision thresholds from out-of-fold predictions 
 def pick_thresholds(y, p):
     ts = np.unique(np.quantile(p, np.linspace(0.30, 0.9995, 700)))
     acc, prec, rec, f1 = [], [], [], []
@@ -171,7 +171,7 @@ print(f"  majority-class baseline accuracy = {max(y.mean(), 1 - y.mean()):.4f}")
 selected_threshold = thresholds[THRESHOLD_MODE]
 print(f"Selected: THRESHOLD_MODE='{THRESHOLD_MODE}' -> {selected_threshold:.3f}")
 
-# ---------------- 4. final fit on all training data ----------------
+#  4. final fit on all training data 
 print("\nFitting final model(s) on all training data...")
 final = {"mode": best_name, "binary": None, "multi": None}
 if best_name in ("binary", "blend"):
@@ -179,14 +179,14 @@ if best_name in ("binary", "blend"):
 if best_name in ("multiclass", "blend"):
     final["multi"] = make_pipeline(best_params).fit(X, y_type)
 
-# ---------------- 5. readable rules (explainability) ----------------
+#  5. readable rules (explainability) 
 ref = final["binary"] or make_pipeline(best_params).fit(X, y)
 Z = SimpleImputer(strategy="median").fit_transform(ref.named_steps["prep"].transform(X))
 tree = DecisionTreeClassifier(max_depth=4, min_samples_leaf=200, random_state=RANDOM_STATE).fit(Z, y)
 with open(f"{MODEL_DIR}/rules_depth4.txt", "w") as f:
     f.write(export_text(tree, feature_names=num_cols + cat_cols, show_weights=True))
 
-# ---------------- 6. save ----------------
+#  6. save 
 joblib.dump(final, f"{MODEL_DIR}/railway_model.joblib")
 joblib.dump({"target": target, "features": X.columns.tolist(), "num_cols": num_cols,
              "cat_cols": cat_cols, "leak_cols": leak_cols, "failure_type_col": ft_col,
